@@ -1,0 +1,129 @@
+<h1 style="text-align: center;">TO DO LIST</h1>
+<table border="1" cellpadding="20" cellspacing="2" style="margin: auto;">
+    <input type="hidden" id="editid">
+    <tr style="background-color: rgb(141, 129, 247); color: white;" >
+        <td>List</td>
+        <td><input type="text" id="name"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td >
+            <input onclick="save()" type="button" id="addbtn" value="+" style="background-color: rgba(251, 0, 255, 0.651); color: wheat;">
+            <input onclick="save()" type="button" id="editbtn" value="Edit">
+        </td>
+    </tr>
+</table>
+<br><br></br>
+<table border="1" cellpadding="10" style="margin: auto;">
+    <tr>
+        <td style="background-color: rgba(0, 139, 28, 0.62);">List</td>
+
+        <td style="background-color: rgba(0, 139, 28, 0.62);">Action</td>
+    </tr>
+    <tbody id="record"></tbody>
+</table>
+<table style="margin: auto;">
+    <tr>
+        <td>
+            <input type="button" value="Clear" onclick="cleardata()" id="clear">
+        </td>
+    </tr>
+</table>
+<script type="text/javascript">
+    let data = [];
+    const viewdata = () => {
+        document.getElementById('editbtn').style.display = "none";
+        document.getElementById('addbtn').style.display = "block";
+
+        let record = JSON.parse(localStorage.getItem('user'));
+        let val = (record == null) ? [] : record
+        let tbl = "";
+        val.map((v) => {
+            const { userid, name } = v;
+            tbl += `
+            <tr>
+            <td>${name}</td>   
+            <td>
+                <button onclick="deletedata(${userid})">Detete</button>
+                <button onclick="editdata(${userid})">Edit</button>
+                
+
+            </td>  
+            </tr>
+        
+            `
+        })
+        document.getElementById('record').innerHTML = tbl;
+    }
+    viewdata();
+    const save = () => {
+        let userid = document.getElementById('editid').value;
+
+        let name = document.getElementById('name').value;
+        let obj = {
+            name: name,
+            userid: Math.floor(Math.random() * 100000)
+        }
+        if (userid) {
+            let alldata = JSON.parse(localStorage.getItem('user'));
+            for (let i in alldata) {
+                if (alldata[i].userid == userid) {
+                    alldata[i].name = name;
+                }
+                localStorage.setItem('user', JSON.stringify(alldata));
+            }
+            alert("Your Record Syccesfully Updated");
+            viewdata();
+        }
+
+        else {
+            if (localStorage.getItem('user') === null || localStorage.getItem('user') === undefined) {
+                data.push(obj);
+                localStorage.setItem('user', JSON.stringify(data));
+            }
+            else {
+                let val = JSON.parse(localStorage.getItem('user'));
+                val.push(obj);
+                localStorage.setItem('user', JSON.stringify(val));
+            }
+            alert("Your Massage Succesfully Created");
+            viewdata();
+        }
+
+        document.getElementById('name').value = "";
+    }
+    // Filter Function(delete data)
+    const deletedata = (id) => {
+        let alldata = JSON.parse(localStorage.getItem('user'));
+        let ans = alldata.filter((val) => {
+            return val.userid != id
+        });
+        localStorage.setItem('user', JSON.stringify(ans));
+        alert("User Succesfully Delete Massage");
+        viewdata();
+    }
+
+    //Filter Function (edit data)
+    const editdata = (id) => {
+        document.getElementById('editbtn').style.display = "block";
+        document.getElementById('addbtn').style.display = "none";
+
+        let val = JSON.parse(localStorage.getItem('user'));
+        let ans = val.filter((v) => {
+            return v.userid == id;
+        });
+        document.getElementById('name').value = ans[0].name;
+        document.getElementById('editid').value = ans[0].userid;
+
+    }
+    // clear data
+    const cleardata=()=>{
+        let data=JSON.parse(localStorage.getItem('user'));
+        let ans = data.filter((val) => {
+            return val.name.value= "";
+        });
+        localStorage.setItem('user', JSON.stringify(ans));
+        alert("All User Succesfully Clear");
+        viewdata();
+    }
+</script>
